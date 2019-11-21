@@ -16,6 +16,7 @@
             margin: 0px;
             background-color: #5900CE;
             font-family: "DX하얀토끼B";
+            overflow: hidden;
         }
 
         h1 {
@@ -24,13 +25,14 @@
         }
 
         .icon {
-            width: 150px;
-            height: 150px;
+            margin: 30px 100px 10px 100px;
+            width: 100px;
+            height: 100px;
         }
 
-        #bundle {
+        #main {
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
         }
 
         .box {
@@ -40,7 +42,12 @@
         }
 
         .icon_text {
-            
+            font-size: 30px;
+        }
+
+        .scene {
+            max-width: 100%;
+            max-height: 100%;
         }
     </style>
     <script>
@@ -50,7 +57,7 @@
 
 <body>
     <h1 id="main_title">선린 수면 도우미</h1>
-    <div id="bundle">
+    <div class="scene" id="main">
         <div class="box">
             <img class="icon" src="../img/clock-circular-outline.png"><p class="icon_text">현재시각</p>
         </div>
@@ -58,8 +65,12 @@
             <img class="icon" src="../img/desk-alarm-clock.png"><p class="icon_text">기상시각</p>
         </div>
         <div class="box">
-            <img class="icon" src="../img/sleeping-hat.png"><p class="iron_text">목표시각</p>
+            <img class="icon" src="../img/sleeping-hat.png"><p class="icon_text">목표시각</p>
         </div>
+    </div>
+
+    <div class="scene" id="now">
+        <h1 id="now_title">완벽한 타이밍!</h1>
     </div>
 </body>
 
