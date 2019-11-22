@@ -5,23 +5,25 @@
     <meta charset="UTF-8">
     <title>MainScene</title>
     <style>
-        html {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-        }
         body {
             margin: 0px;
+            padding: 0px;
             background-color: #5900CE;
             font-family: "DX하얀토끼B";
+            color: white;
             overflow: hidden;
         }
 
         h1 {
+            animation: start_ani_title 1s 1s forwards;
+            margin: 20vw 0;
             text-align: center;
             font-size: 100px;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 50px;
         }
 
         .icon {
@@ -31,14 +33,29 @@
         }
 
         #main {
+            top: 0vw;
+            justify-content: center;
+        }
+
+        #main>.group-btn {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
         }
 
         .box {
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
+            background-color: #6A3EFF;
+
+            width: 256px;
+            height: 256px;
+            margin: 0 16px;
+            border-radius: 100%;
+
+            transform: scale(0.75);
         }
 
         .icon_text {
@@ -46,31 +63,226 @@
         }
 
         .scene {
-            max-width: 100%;
-            max-height: 100%;
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 100vh;
+            transition: top 0.5s;
+            background-color: #5900CE;
+        }
+
+        .scene-isShow {
+            top: 0;
+        }
+
+        #now-btn {
+            position: relative;
+            animation: start_ani_btn 1s 2.5s forwards;
+            left: -100vw;
+        }
+
+        #wake-btn {
+            position: relative;
+            animation: start_ani_btn 1s 2s forwards;
+            left: -100vw;
+        }
+
+        #goal-btn {
+            position: relative;
+            animation: start_ani_btn 1s 1.5s forwards;
+            left: -100vw;
+        }
+
+        #back-btn {
+            position: fixed;
+            background-color: #6A3EFF;
+
+            width: 128px;
+            height: 128px;
+            margin: 0 16px;
+            border-radius: 100%;
+
+            transform: scale(0.75);
+        }
+
+        #now_text {
+            margin: 70px 0 0 0;
+            text-align: center;
+            font-size: 30px;
+        }
+
+        #ok_btn {
+            width: 200px;
+            height: 70px;
+            margin: 30px auto;
+            text-align: center;
+            font-size: 50px;
+
+            border-radius: 100px;
+            background-color: #6A3EFF;
+        }
+
+        @keyframes start_ani_btn {
+            0% {
+                left: -100vw;
+            }
+
+            100% {
+                left: 0vw;
+            }
+        }
+
+        @keyframes start_ani_title {
+            0% {
+                margin: 20vw 0;
+                font-size: 100px;
+            }
+
+            100% {
+                margin: 10vw 0 5vw 0;
+                font-size: 70px;
+            }
+        }
+
+        #time_selector {
+            display: flex;
+            justify-content: center;
+
+            font-size: 50px;
+        }
+        ::-webkit-scrollbar{
+            display:none;
+        }
+        #time_selector_display {
+            height: 50px;
+            overflow: scroll;
         }
     </style>
     <script>
+        function change_scene(sceneNumber) {
+            switch (sceneNumber) {
+                case 0:
+                    document.getElementById("now").classList.add("scene-isShow");
+                    var time = new Date();
+                    document.getElementById("now_text").innerHTML = Number(time.getHours() + 6) + ":" + Number(time
+                            .getMinutes()) + " 또는 " + Number(time.getHours() + 7) + ":" + Number(time.getMinutes() +
+                            30) + " 또는 " + Number(time.getHours() + 9) + ":" + Number(time.getMinutes()) + " 또는 " +
+                        Number(
+                            time.getHours() + 10) + ":" + Number(time.getMinutes() + 30);
+                    break;
+                case 1:
+                    document.getElementById("wake").classList.add("scene-isShow");
+                    break;
+                case 2:
+                    document.getElementById("goal").classList.add("scene-isShow");
+                    break;
+            }
+        }
 
+        function back_scene(sceneNumber) {
+            switch (sceneNumber) {
+                case 0:
+                    document.getElementById("now").classList.remove("scene-isShow");
+                    break;
+                case 1:
+                    document.getElementById("wake").classList.remove("scene-isShow");
+                    break;
+                case 2:
+                    document.getElementById("goal").classList.remove("scene-isShow");
+                    break;
+            }
+        }
+
+        var hour_sel = document.getElementById("time_hour_selector");
     </script>
 </head>
 
 <body>
-    <h1 id="main_title">선린 수면 도우미</h1>
     <div class="scene" id="main">
-        <div class="box">
-            <img class="icon" src="../img/clock-circular-outline.png"><p class="icon_text">현재시각</p>
-        </div>
-        <div class="box">
-            <img class="icon" src="../img/desk-alarm-clock.png"><p class="icon_text">기상시각</p>
-        </div>
-        <div class="box">
-            <img class="icon" src="../img/sleeping-hat.png"><p class="icon_text">목표시각</p>
+        <h1 id="main_title">선린 수면 도우미</h1>
+        <div class="group-btn">
+            <div class="box" id="now-btn" onclick="change_scene(0)">
+                <img class="icon" src="../img/clock-circular-outline.png">
+                <p class="icon_text">현재시각</p>
+            </div>
+            <div class="box" id="wake-btn" onclick="change_scene(1)">
+                <img class="icon" src="../img/desk-alarm-clock.png">
+                <p class="icon_text">기상시각</p>
+            </div>
+            <div class="box" id="goal-btn" onclick="change_scene(2)">
+                <img class="icon" src="../img/sleeping-hat.png">
+                <p class="icon_text">목표시각</p>
+            </div>
         </div>
     </div>
 
     <div class="scene" id="now">
-        <h1 id="now_title">완벽한 타이밍!</h1>
+        <div class="box" id="back-btn" onclick="back_scene(0)">
+            <img class="icon" src="../img/reply.png">
+        </div>
+        <h1>현재시각</h1>
+        <h2>완벽한 타이밍!</h2>
+        <p id="now_text">Roaing...</p>
+    </div>
+
+    <div class="scene" id="wake">
+        <div class="box" id="back-btn" onclick="back_scene(1)">
+            <img class="icon" src="../img/reply.png">
+        </div>
+        <h1 class="title">기상시각</h1>
+        <div id="time_selector">
+            <div id="time_hour_selector">
+                <div id="time_selector_display">
+                    <span>00</span><br>
+                    <span>01</span><br>
+                    <span>02</span><br>
+                    <span>03</span><br>
+                    <span>04</span><br>
+                    <span>05</span><br>
+                    <span>06</span><br>
+                    <span>07</span><br>
+                    <span>08</span><br>
+                    <span>09</span><br>
+                    <span>10</span><br>
+                    <span>11</span><br>
+                    <span>12</span><br>
+                    <span>13</span><br>
+                    <span>14</span><br>
+                    <span>15</span><br>
+                    <span>16</span><br>
+                    <span>17</span><br>
+                    <span>18</span><br>
+                    <span>19</span><br>
+                    <span>20</span><br>
+                    <span>21</span><br>
+                    <span>22</span><br>
+                    <span>23</span><br>
+                    <span>24</span>
+                </div>
+            </div>
+            :
+            <div id="time_min_selector">
+                <div id="time_selector_display">
+                    <span>00</span><br>
+                    <span>10</span><br>
+                    <span>20</span><br>
+                    <span>30</span><br>
+                    <span>40</span><br>
+                    <span>50</span><br>
+                    <span>60</span><br>
+                </div>
+            </div>
+        </div>
+        <div class="box" id="ok_btn">
+            <p>확인</p>
+        </div>
+    </div>
+
+    <div class="scene" id="goal">
+        <div class="box" id="back-btn" onclick="back_scene(2)">
+            <img class="icon" src="../img/reply.png">
+        </div>
+        <h1 class="title">목표시각</h1>
     </div>
 </body>
 
