@@ -150,10 +150,12 @@
 
             font-size: 50px;
         }
-        ::-webkit-scrollbar{
-            display:none;
+
+        ::-webkit-scrollbar {
+            display: none;
         }
-        #time_selector_display {
+
+        .time_selector_display {
             height: 50px;
             overflow: scroll;
         }
@@ -193,11 +195,76 @@
             }
         }
 
+        var hour = 0,
+            minute = 0;
+
+        function selectorWheel(e, th) {
+            e.preventDefault();
+
+            var delta = e.wheelDelta / 120;
+
+            if (th.id == "time_hour_selector") {
+                if (delta < 0) {
+                    if(hour < 24)
+                        hour++;
+                }
+                else {
+                    if(hour > 0)
+                        hour--;
+                }
+
+                if(hour == 24) {
+                    minute = 0;
+                }
+            }
+            else if (th.id == "time_min_selector" && hour < 24) {
+                if (delta < 0) {
+                    if(minute < 60)
+                        minute+=10;
+                }
+                else {
+                    if(minute > 0)
+                        minute-=10;
+                    else if(hour > 0){
+                        hour--;
+                        minute = 50;
+                    }
+                }
+
+                if(minute == 60){
+                    minute = 0;
+                    hour++;
+                }
+            }
+        }
+
+        var hour_selector, minute_selector;
+        var hour_selector_Inter, minute_selector_Inter;
+
+        function seting(){
+            hour_selector = document.getElementById("time_hour_selector");
+            minute_selector = document.getElementById("time_min_selector");
+
+            hour_selector_Inter = setInterval(function() {
+                if(hour > hour_selector.scrollTop / 50)
+                    hour_selector.scrollBy(0, hour - Math.floor(hour_selector.scrollTop / 50));
+                else
+                    hour_selector.scrollBy(0, hour - Math.ceil(hour_selector.scrollTop / 50));
+            });
+
+            minute_selector_Inter = setInterval(function() {
+                if(minute / 10 > minute_selector.scrollTop / 50)
+                    minute_selector.scrollBy(0, minute / 10 - Math.floor(minute_selector.scrollTop / 50));
+                else
+                    minute_selector.scrollBy(0, minute / 10 - Math.ceil(minute_selector.scrollTop / 50));
+            });
+        }
+
         var hour_sel = document.getElementById("time_hour_selector");
     </script>
 </head>
 
-<body>
+<body onload="seting()">
     <div class="scene" id="main">
         <h1 id="main_title">선린 수면 도우미</h1>
         <div class="group-btn">
@@ -231,46 +298,42 @@
         </div>
         <h1 class="title">기상시각</h1>
         <div id="time_selector">
-            <div id="time_hour_selector">
-                <div id="time_selector_display">
-                    <span>00</span><br>
-                    <span>01</span><br>
-                    <span>02</span><br>
-                    <span>03</span><br>
-                    <span>04</span><br>
-                    <span>05</span><br>
-                    <span>06</span><br>
-                    <span>07</span><br>
-                    <span>08</span><br>
-                    <span>09</span><br>
-                    <span>10</span><br>
-                    <span>11</span><br>
-                    <span>12</span><br>
-                    <span>13</span><br>
-                    <span>14</span><br>
-                    <span>15</span><br>
-                    <span>16</span><br>
-                    <span>17</span><br>
-                    <span>18</span><br>
-                    <span>19</span><br>
-                    <span>20</span><br>
-                    <span>21</span><br>
-                    <span>22</span><br>
-                    <span>23</span><br>
-                    <span>24</span>
-                </div>
+            <div class="time_selector_display" id="time_hour_selector" onmousewheel="selectorWheel(event, this)">
+                <span>00</span><br>
+                <span>01</span><br>
+                <span>02</span><br>
+                <span>03</span><br>
+                <span>04</span><br>
+                <span>05</span><br>
+                <span>06</span><br>
+                <span>07</span><br>
+                <span>08</span><br>
+                <span>09</span><br>
+                <span>10</span><br>
+                <span>11</span><br>
+                <span>12</span><br>
+                <span>13</span><br>
+                <span>14</span><br>
+                <span>15</span><br>
+                <span>16</span><br>
+                <span>17</span><br>
+                <span>18</span><br>
+                <span>19</span><br>
+                <span>20</span><br>
+                <span>21</span><br>
+                <span>22</span><br>
+                <span>23</span><br>
+                <span>24</span>
             </div>
             :
-            <div id="time_min_selector">
-                <div id="time_selector_display">
-                    <span>00</span><br>
-                    <span>10</span><br>
-                    <span>20</span><br>
-                    <span>30</span><br>
-                    <span>40</span><br>
-                    <span>50</span><br>
-                    <span>60</span><br>
-                </div>
+            <div class="time_selector_display" id="time_min_selector" onmousewheel="selectorWheel(event, this)">
+                <span>00</span><br>
+                <span>10</span><br>
+                <span>20</span><br>
+                <span>30</span><br>
+                <span>40</span><br>
+                <span>50</span><br>
+                <span>60</span><br>
             </div>
         </div>
         <div class="box" id="ok_btn">
