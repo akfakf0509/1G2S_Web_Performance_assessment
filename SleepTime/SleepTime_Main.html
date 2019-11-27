@@ -105,7 +105,7 @@
             transform: scale(0.75);
         }
 
-        #now_text {
+        .result_text {
             margin: 70px 0 0 0;
             text-align: center;
             font-size: 30px;
@@ -176,7 +176,13 @@
                     document.getElementById("wake").classList.add("scene-isShow");
                     break;
                 case 2:
+                    document.getElementById("wake_result").classList.add("scene-isShow");
+                    break;
+                case 3:
                     document.getElementById("goal").classList.add("scene-isShow");
+                    break;
+                case 4:
+                    document.getElementById("goal_result").classList.add("scene-isShow");
                     break;
             }
         }
@@ -190,13 +196,22 @@
                     document.getElementById("wake").classList.remove("scene-isShow");
                     break;
                 case 2:
+                    document.getElementById("wake_result").classList.remove("scene-isShow");
+                    break;
+                case 3:
                     document.getElementById("goal").classList.remove("scene-isShow");
+                    break;
+                case 4:
+                    document.getElementById("goal_result").classList.remove("scene-isShow");
                     break;
             }
         }
 
-        var hour = 0,
-            minute = 0;
+        var selector_time = {
+            isam: 1,
+            hour: 0,
+            minute: 0
+        };
 
         function selectorWheel(e, th) {
             e.preventDefault();
@@ -205,35 +220,35 @@
 
             if (th.id == "time_hour_selector") {
                 if (delta < 0) {
-                    if(hour < 24)
-                        hour++;
-                }
-                else {
-                    if(hour > 0)
-                        hour--;
+                    if (selector_time.hour < 12)
+                        selector_time.hour++;
+                } else {
+                    if (selector_time.hour > 0)
+                        selector_time.hour--;
                 }
 
-                if(hour == 24) {
-                    minute = 0;
+                if (selector_time.hour == 12) {
+                    selector_time.minute = 0;
                 }
-            }
-            else if (th.id == "time_min_selector" && hour < 24) {
+            } else if (th.id == "time_min_selector") {
                 if (delta < 0) {
-                    if(minute < 60)
-                        minute+=10;
-                }
-                else {
-                    if(minute > 0)
-                        minute-=10;
-                    else if(hour > 0){
-                        hour--;
-                        minute = 50;
+                    if (selector_time.minute < 60 && selector_time.hour < 12 && selector_time.isam) {
+                        selector_time.minute += 10;
+                    } else if (selector_time.minute < 60 && selector_time.hour < 12 && !selector_time.isam) {
+
+                    }
+                } else {
+                    if (selector_time.minute > 0)
+                        selector_time.minute -= 10;
+                    else if (selector_time.hour > 0) {
+                        selector_time.hour--;
+                        selector_time.minute = 50;
                     }
                 }
 
-                if(minute == 60){
-                    minute = 0;
-                    hour++;
+                if (minute == 60) {
+                    selector_time.minute = 0;
+                    selector_time.hour++;
                 }
             }
         }
@@ -241,23 +256,36 @@
         var hour_selector, minute_selector;
         var hour_selector_Inter, minute_selector_Inter;
 
-        function seting(){
+        function seting() {
             hour_selector = document.getElementById("time_hour_selector");
             minute_selector = document.getElementById("time_min_selector");
 
-            hour_selector_Inter = setInterval(function() {
-                if(hour > hour_selector.scrollTop / 50)
-                    hour_selector.scrollBy(0, hour - Math.floor(hour_selector.scrollTop / 50));
+            hour_selector_Inter = setInterval(function () {
+                if (selector_time.hour > hour_selector.scrollTop / 50)
+                    hour_selector.scrollBy(0, selector_time.hour - Math.floor(hour_selector.scrollTop / 50));
                 else
-                    hour_selector.scrollBy(0, hour - Math.ceil(hour_selector.scrollTop / 50));
+                    hour_selector.scrollBy(0, selector_time.hour - Math.ceil(hour_selector.scrollTop / 50));
             });
 
-            minute_selector_Inter = setInterval(function() {
-                if(minute / 10 > minute_selector.scrollTop / 50)
-                    minute_selector.scrollBy(0, minute / 10 - Math.floor(minute_selector.scrollTop / 50));
+            minute_selector_Inter = setInterval(function () {
+                if (selector_time.minute / 10 > minute_selector.scrollTop / 50)
+                    minute_selector.scrollBy(0, selector_time.minute / 10 - Math.floor(minute_selector
+                        .scrollTop / 50));
                 else
-                    minute_selector.scrollBy(0, minute / 10 - Math.ceil(minute_selector.scrollTop / 50));
+                    minute_selector.scrollBy(0, selector_time.minute / 10 - Math.ceil(minute_selector
+                        .scrollTop / 50));
             });
+        }
+
+        function calculate(th) {
+            if (th.id == "wake_ok_btn") {
+                document.getElementById("wake_text").innerHTML = Number(hour - 6) + ":" + Number(minute) + " 또는 " +
+                    Number(hour - 7) + ":" + Number(minute -
+                        30) + " 또는 " + Number(hour - 9) + ":" + Number(minute) + " 또는 " +
+                    Number(
+                        hour - 10) + ":" + Number(minute - 30);
+            }
+            change_scene(2);
         }
 
         var hour_sel = document.getElementById("time_hour_selector");
@@ -276,7 +304,7 @@
                 <img class="icon" src="../img/desk-alarm-clock.png">
                 <p class="icon_text">기상시각</p>
             </div>
-            <div class="box" id="goal-btn" onclick="change_scene(2)">
+            <div class="box" id="goal-btn" onclick="change_scene(3)">
                 <img class="icon" src="../img/sleeping-hat.png">
                 <p class="icon_text">목표시각</p>
             </div>
@@ -289,7 +317,7 @@
         </div>
         <h1>현재시각</h1>
         <h2>완벽한 타이밍!</h2>
-        <p id="now_text">Roaing...</p>
+        <p class="result_text" id="now_text">Roaing...</p>
     </div>
 
     <div class="scene" id="wake">
@@ -298,6 +326,11 @@
         </div>
         <h1 class="title">기상시각</h1>
         <div id="time_selector">
+            <div class="time_selector_display" id="time_ampm_selector">
+                <span>AM</span><br>
+                <span>PM</span><br>
+            </div>
+            &nbsp;
             <div class="time_selector_display" id="time_hour_selector" onmousewheel="selectorWheel(event, this)">
                 <span>00</span><br>
                 <span>01</span><br>
@@ -312,18 +345,6 @@
                 <span>10</span><br>
                 <span>11</span><br>
                 <span>12</span><br>
-                <span>13</span><br>
-                <span>14</span><br>
-                <span>15</span><br>
-                <span>16</span><br>
-                <span>17</span><br>
-                <span>18</span><br>
-                <span>19</span><br>
-                <span>20</span><br>
-                <span>21</span><br>
-                <span>22</span><br>
-                <span>23</span><br>
-                <span>24</span>
             </div>
             :
             <div class="time_selector_display" id="time_min_selector" onmousewheel="selectorWheel(event, this)">
@@ -337,12 +358,21 @@
             </div>
         </div>
         <div class="box" id="ok_btn">
-            <p>확인</p>
+            <p id="wake_ok_btn" onclick="calculate(this)">확인</p>
         </div>
     </div>
 
-    <div class="scene" id="goal">
+    <div class="scene" id="wake_result">
         <div class="box" id="back-btn" onclick="back_scene(2)">
+            <img class="icon" src="../img/reply.png">
+        </div>
+        <h1>기상시각</h1>
+        <h2>완벽한 타이밍!</h2>
+        <p class="result_text" id="wake_text">Roaing...</p>
+    </div>
+
+    <div class="scene" id="goal">
+        <div class="box" id="back-btn" onclick="back_scene(3)">
             <img class="icon" src="../img/reply.png">
         </div>
         <h1 class="title">목표시각</h1>
