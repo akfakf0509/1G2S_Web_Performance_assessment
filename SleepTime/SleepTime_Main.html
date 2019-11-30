@@ -43,7 +43,7 @@
             justify-content: center;
         }
 
-        .box {
+        .btn {
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -296,15 +296,15 @@
     <div class="scene" id="main">
         <h1 id="main_title">선린 수면 도우미</h1>
         <div class="group-btn">
-            <div class="box" id="now-btn" onclick="change_scene(0)">
+            <div class="btn" id="now-btn" onclick="change_scene(0)">
                 <img class="icon" src="../img/clock-circular-outline.png">
                 <p class="icon_text">현재시각</p>
             </div>
-            <div class="box" id="wake-btn" onclick="change_scene(1)">
+            <div class="btn" id="wake-btn" onclick="change_scene(1)">
                 <img class="icon" src="../img/desk-alarm-clock.png">
                 <p class="icon_text">기상시각</p>
             </div>
-            <div class="box" id="goal-btn" onclick="change_scene(3)">
+            <div class="btn" id="goal-btn" onclick="change_scene(3)">
                 <img class="icon" src="../img/sleeping-hat.png">
                 <p class="icon_text">목표시각</p>
             </div>
@@ -312,23 +312,53 @@
     </div>
 
     <div class="scene" id="now">
-        <div class="box" id="back-btn" onclick="back_scene(0)">
+        <div class="btn" id="back-btn" onclick="back_scene(0)">
             <img class="icon" src="../img/reply.png">
         </div>
         <h1>현재시각</h1>
         <h2>완벽한 타이밍!</h2>
-        <p class="result_text" id="now_text">Roaing...</p>
+        <div class="result_text">
+            <div class="btn" id="result_back_btn">
+                <p>이전</p>
+            </div>
+            <div id="time_selector">
+                <div class="time_selector_display" id="time_hour_shower" onmousewheel="return false;">
+                    <span>00</span><br>
+                    <span>01</span><br>
+                    <span>02</span><br>
+                    <span>03</span><br>
+                    <span>04</span><br>
+                    <span>05</span><br>
+                    <span>06</span><br>
+                    <span>07</span><br>
+                    <span>08</span><br>
+                    <span>09</span><br>
+                    <span>10</span><br>
+                    <span>11</span><br>
+                    <span>12</span><br>
+                </div>시간&nbsp;
+
+                <div class="time_selector_display" id="time_min_shower" onmousewheel="return false;">
+                    <span>00</span><br>
+                    <span>30</span><br>
+                    <span>60</span><br>
+                </div>분 숙면가능
+            </div>
+            <div class="btn" id="result_next_btn">
+                    <p>다음</p>
+                </div>
+        </div>
     </div>
 
     <div class="scene" id="wake">
-        <div class="box" id="back-btn" onclick="back_scene(1)">
+        <div class="btn" id="back-btn" onclick="back_scene(1)">
             <img class="icon" src="../img/reply.png">
         </div>
         <h1 class="title">기상시각</h1>
         <div id="time_selector">
             <div class="time_selector_display" id="time_ampm_selector">
                 <span>AM</span><br>
-                <span>PM</span><br>
+                <span>PM</span><br>  
             </div>
             &nbsp;
             <div class="time_selector_display" id="time_hour_selector" onmousewheel="selectorWheel(event, this)">
@@ -357,13 +387,13 @@
                 <span>60</span><br>
             </div>
         </div>
-        <div class="box" id="ok_btn">
+        <div class="btn" id="ok_btn">
             <p id="wake_ok_btn" onclick="calculate(this)">확인</p>
         </div>
     </div>
 
     <div class="scene" id="wake_result">
-        <div class="box" id="back-btn" onclick="back_scene(2)">
+        <div class="btn" id="back-btn" onclick="back_scene(2)">
             <img class="icon" src="../img/reply.png">
         </div>
         <h1>기상시각</h1>
@@ -372,7 +402,7 @@
     </div>
 
     <div class="scene" id="goal">
-        <div class="box" id="back-btn" onclick="back_scene(3)">
+        <div class="btn" id="back-btn" onclick="back_scene(3)">
             <img class="icon" src="../img/reply.png">
         </div>
         <h1 class="title">목표시각</h1>
