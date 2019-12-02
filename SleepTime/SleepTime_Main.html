@@ -343,17 +343,18 @@
 
         var ampm_wake_selector, hour_wake_selector, minute_wake_selector;
         var ampm_goal_selector, hour_goal_selector, minute_goal_selector;
+
         var ampm_selector_Inter, hour_selector_Inter, minute_selector_Inter;
 
-        var hour_now_should_sleep_selector, min_now_should_sleep_selector;
+        var ampm_now_should_sleep_selector, hour_now_should_sleep_selector, min_now_should_sleep_selector;
         var hour_now_can_sleep_selector, min_now_can_sleep_selector;
 
-        var hour_now_sleep_selector_Inter, min_now_sleep_selector_Inter;
+        var ampm_now_sleep_selector_Inter, hour_now_sleep_selector_Inter, min_now_sleep_selector_Inter;
 
-        var hour_result_should_sleep_selector, min_result_should_sleep_selector;
+        var ampm_result_should_sleep_selector, hour_result_should_sleep_selector, min_result_should_sleep_selector;
         var hour_result_can_sleep_selector, min_result_can_sleep_selector;
 
-        var hour_result_sleep_selector_Inter, min_result_sleep_selector_Inter;
+        var ampm_result_should_sleep_selector, hour_result_sleep_selector_Inter, min_result_sleep_selector_Inter;
 
         function setting() {
             ampm_wake_selector = document.getElementById("time_ampm_wake_selector");
@@ -364,11 +365,13 @@
             hour_goal_selector = document.getElementById("time_hour_goal_selector");
             minute_goal_selector = document.getElementById("time_min_goal_selector");
 
+            ampm_now_should_sleep_selector = document.getElementById("time_ampm_now_should_sleep_selector");
             hour_now_should_sleep_selector = document.getElementById("time_hour_now_should_sleep_selector");
             min_now_should_sleep_selector = document.getElementById("time_min_now_should_sleep_selector");
             hour_now_can_sleep_selector = document.getElementById("time_hour_now_can_sleep_selector");
             min_now_can_sleep_selector = document.getElementById("time_min_now_can_sleep_selector");
 
+            ampm_result_should_sleep_selector = document.getElementById("time_ampm_result_should_sleep_selector");
             hour_result_should_sleep_selector = document.getElementById("time_hour_result_should_sleep_selector");
             min_result_should_sleep_selector = document.getElementById("time_min_result_should_sleep_selector");
             hour_result_can_sleep_selector = document.getElementById("time_hour_result_can_sleep_selector");
@@ -382,7 +385,7 @@
                     ampm_wake_selector.scrollBy(0, 1);
                     ampm_goal_selector.scrollBy(0, 1);
                 }
-            })
+            });
 
             hour_selector_Inter = setInterval(function () {
                 if (selector_time.hour > hour_wake_selector.scrollTop / 50) {
@@ -409,6 +412,14 @@
                         .scrollTop / 50));
                     minute_goal_selector.scrollBy(0, selector_time.minute / 10 - Math.ceil(minute_goal_selector
                         .scrollTop / 50));
+                }
+            });
+
+            ampm_now_sleep_selector_Inter = setInterval(function () {
+                if (now_calculate_result.isam) {
+                    ampm_now_should_sleep_selector.scrollBy(0, -1);
+                } else {
+                    ampm_now_should_sleep_selector.scrollBy(0, 1);
                 }
             });
 
@@ -446,6 +457,14 @@
                 } else {
                     min_now_can_sleep_selector.scrollBy(0, now_calculate_time.minute / 10 - Math.ceil(
                         min_now_can_sleep_selector.scrollTop / 50));
+                }
+            });
+
+            ampm_result_sleep_selector_Inter = setInterval(function () {
+                if (result_calculate_result.isam) {
+                    ampm_result_should_sleep_selector.scrollBy(0, -1);
+                } else {
+                    ampm_result_should_sleep_selector.scrollBy(0, 1);
                 }
             });
 
@@ -505,11 +524,13 @@
         var result_calculate_result = new time(1, 0, 0);
 
         function wake_result_update() {
-            result_calculate_result = totime(selector_time.tominutes - result_calculate_time.tominutes);
+            document.getElementById("result_h1").innerHTML="기상시각";
+            result_calculate_result = totime(selector_time.tominutes() - result_calculate_time.tominutes());
         }
 
         function goal_result_update() {
-            result_calculate_result = totime(selector_time.tominutes - result_calculate_time.tominutes);
+            document.getElementById("result_h1").innerHTML="숙면시각";
+            result_calculate_result = totime(selector_time.tominutes() - result_calculate_time.tominutes());
         }
 
         function now_back_btn_pushed() {
@@ -605,6 +626,10 @@
                 <p>다음</p>
             </div>
             <div class="time_selector">
+                <div class="time_selector_display" id="time_ampm_now_should_sleep_selector" onmousewheel="return false;">
+                    <span>AM</span><br>
+                    <span>PM</span><br>
+                </div>&nbsp;
                 <div class="time_selector_display" id="time_hour_now_should_sleep_selector"
                     onmousewheel="return false;">
                     <span>00</span><br>
@@ -758,8 +783,10 @@
             <div class="result_next_btn" id="result_next_btn" onclick="result_next_btn_pushed()">
                 <p>다음</p>
             </div>
+            <br>
+            
             <div class="time_selector">
-                <div class="time_selector_display" id="time_ampm_result_should_selector" onmousewheel="return false;">
+                <div class="time_selector_display" id="time_ampm_result_should_sleep_selector" onmousewheel="return false;">
                     <span>AM</span><br>
                     <span>PM</span><br>
                 </div>&nbsp;
@@ -788,7 +815,7 @@
                     <span>40</span><br>
                     <span>50</span><br>
                     <span>60</span><br>
-                </div>에 숙면시
+                </div>에&nbsp;<span>숙면</span>시
             </div><br>
             <div class="time_selector">
                 <div class="time_selector_display" id="time_hour_result_can_sleep_selector"
