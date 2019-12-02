@@ -105,6 +105,29 @@
             transform: scale(0.75);
         }
 
+        #result_back_btn {
+            position: fixed;
+            background-color: #6A3EFF;
+
+            width: 128px;
+            height: 128px;
+            border-radius: 100%;
+
+            transform: scale(0.75);
+        }
+
+        #result_next_btn {
+            position: fixed;
+            background-color: #6A3EFF;
+
+            width: 128px;
+            height: 128px;
+            right: 0px;
+            border-radius: 100%;
+
+            transform: scale(0.75);
+        }
+
         .result_text {
             margin: 70px 0 0 0;
             text-align: center;
@@ -169,24 +192,15 @@
             switch (sceneNumber) {
                 case 0:
                     document.getElementById("now").classList.add("scene-isShow");
-                    var time = new Date();
-                    document.getElementById("now_text").innerHTML = Number(time.getHours() + 6) + ":" + Number(time
-                            .getMinutes()) + " 또는 " + Number(time.getHours() + 7) + ":" + Number(time.getMinutes() +
-                            30) + " 또는 " + Number(time.getHours() + 9) + ":" + Number(time.getMinutes()) + " 또는 " +
-                        Number(
-                            time.getHours() + 10) + ":" + Number(time.getMinutes() + 30);
                     break;
                 case 1:
                     document.getElementById("wake").classList.add("scene-isShow");
                     break;
                 case 2:
-                    document.getElementById("wake_result").classList.add("scene-isShow");
-                    break;
-                case 3:
                     document.getElementById("goal").classList.add("scene-isShow");
                     break;
-                case 4:
-                    document.getElementById("goal_result").classList.add("scene-isShow");
+                case 3:
+                    document.getElementById("result").classList.add("scene-isShow");
                     break;
             }
         }
@@ -200,35 +214,63 @@
                     document.getElementById("wake").classList.remove("scene-isShow");
                     break;
                 case 2:
-                    document.getElementById("wake_result").classList.remove("scene-isShow");
-                    break;
-                case 3:
                     document.getElementById("goal").classList.remove("scene-isShow");
                     break;
-                case 4:
-                    document.getElementById("goal_result").classList.remove("scene-isShow");
+                case 3:
+                    document.getElementById("result").classList.remove("scene-isShow");
                     break;
             }
         }
 
-        var selector_time = {
-            isam: 1,
-            hour: 0,
-            minute: 0
-        };
+        function time(_isam, _hour, _minute) {
+            this.isam = _isam;
+            this.hour = _hour;
+            this.minute = _minute;
+
+            this.tominutes = function(){
+                return (this.isam ? 0 : 12 * 60) + this.hour * 60 + this.minute;
+            };
+        }
+
+        function totime(minutes){
+            while(minutes > 24 * 60){
+                minutes -= 24 * 60;
+            }
+
+            if(minutes < 0){
+                minutes += 24 * 60;
+            }
+
+            var tmp = new time(1,0,0);
+
+            if(minutes >= 12 * 60){
+                minutes -= 12 * 60;
+                tmp.isam = 0;
+            }
+
+            tmp.hour = (minutes - minutes % 60) / 60;
+            minutes -= tmp.hour * 60;
+            tmp.minute = minutes;
+            
+            //console.log(tmp.isam + " " + tmp.hour + " "+ tmp.minute);
+
+            return tmp;
+        }
+
+        var selector_time = new time(1, 0, 0);
 
         function selectorWheel(e, th) {
             e.preventDefault();
 
             var delta = e.wheelDelta / 120;
 
-            if (th.id == "time_ampm_selector") {
+            if (th.id == "time_ampm_wake_selector" || th.id == "time_ampm_goal_selector") {
                 if (delta < 0) {
                     selector_time.isam = 0;
                 } else {
                     selector_time.isam = 1;
                 }
-            } else if (th.id == "time_hour_selector") {
+            } else if (th.id == "time_hour_wake_selector" || th.id == "time_hour_goal_selector") {
                 if (delta < 0) {
                     if (selector_time.hour < 12)
                         selector_time.hour++;
@@ -248,7 +290,7 @@
                 if (selector_time.hour == 12) {
                     selector_time.minute = 0;
                 }
-            } else if (th.id == "time_min_selector") {
+            } else if (th.id == "time_min_wake_selector" || th.id == "time_min_goal_selector") {
                 if (delta < 0) {
                     if (selector_time.minute < 50 && selector_time.hour < 12) {
                         selector_time.minute += 10;
@@ -275,52 +317,113 @@
             }
         }
 
-        var ampm_selector, hour_selector, minute_selector;
-        var hour_selector_Inter, minute_selector_Inter;
+        var ampm_wake_selector, hour_wake_selector, minute_wake_selector;
+        var ampm_goal_selector, hour_goal_selector, minute_goal_selector;
+        var ampm_selector_Inter, hour_selector_Inter, minute_selector_Inter;
 
-        function seting() {
-            ampm_selector = document.getElementById("time_ampm_selector");
-            hour_selector = document.getElementById("time_hour_selector");
-            minute_selector = document.getElementById("time_min_selector");
+        var hour_now_should_sleep_selector, min_now_should_sleep_selector;
+        var hour_now_can_sleep_selector, min_now_can_sleep_selector;
+        
+        var hour_now_sleep_selector_Inter, min_now_sleep_selector_Inter;
+
+        var hour_result_should_sleep_selector, min_result_should_sleep_selector;
+        var hour_result_can_sleep_selector, min_result_can_sleep_selector;
+
+        var hour_result_sleep_selector_Inter, min_result_sleep_selecotr_Inter;
+
+        function setting() {
+            ampm_wake_selector = document.getElementById("time_ampm_wake_selector");
+            hour_wake_selector = document.getElementById("time_hour_wake_selector");
+            minute_wake_selector = document.getElementById("time_min_wake_selector");
+
+            ampm_goal_selector = document.getElementById("time_ampm_goal_selector");
+            hour_goal_selector = document.getElementById("time_hour_goal_selector");
+            minute_goal_selector = document.getElementById("time_min_goal_selector");
+
+            hour_now_should_sleep_selector = document.getElementById("time_hour_now_should_sleep_selector");
+            min_now_should_sleep_selector = document.getElementById("time_min_now_should_sleep_selector");
+            hour_now_can_sleep_selector = document.getElementById("time_hour_now_can_sleep_selector");
+            min_now_can_sleep_selector = document.getElementById("time_min_now_can_sleep_selector");
+
+            hour_result_should_sleep_selector = document.getElementById("time_hour_result_should_sleep_selector");
+            min_result_should_sleep_selector = document.getElementById("time_min_result_should_sleep_selector");
+            hour_result_can_sleep_selector = document.getElementById("time_hour_result_can_sleep_selector");
+            min_result_can_sleep_selector = document.getElementById("time_min_result_can_sleep_selector");
 
             ampm_selector_Inter = setInterval(function () {
                 if (selector_time.isam) {
-                    ampm_selector.scrollBy(0, -1);
+                    ampm_wake_selector.scrollBy(0, -1);
+                    ampm_goal_selector.scrollBy(0, -1);
                 } else {
-                    ampm_selector.scrollBy(0, 1);
+                    ampm_wake_selector.scrollBy(0, 1);
+                    ampm_goal_selector.scrollBy(0, 1);
                 }
             })
 
             hour_selector_Inter = setInterval(function () {
-                if (selector_time.hour > hour_selector.scrollTop / 50)
-                    hour_selector.scrollBy(0, selector_time.hour - Math.floor(hour_selector.scrollTop /
+                if (selector_time.hour > hour_wake_selector.scrollTop / 50) {
+                    hour_wake_selector.scrollBy(0, selector_time.hour - Math.floor(hour_wake_selector
+                        .scrollTop / 50));
+                    hour_goal_selector.scrollBy(0, selector_time.hour - Math.floor(hour_goal_selector
+                        .scrollTop / 50));
+                } else {
+                    hour_wake_selector.scrollBy(0, selector_time.hour - Math.ceil(hour_wake_selector.scrollTop /
                         50));
-                else
-                    hour_selector.scrollBy(0, selector_time.hour - Math.ceil(hour_selector.scrollTop / 50));
+                    hour_goal_selector.scrollBy(0, selector_time.hour - Math.ceil(hour_goal_selector.scrollTop /
+                        50));
+                }
             });
 
             minute_selector_Inter = setInterval(function () {
-                if (selector_time.minute / 10 > minute_selector.scrollTop / 50)
-                    minute_selector.scrollBy(0, selector_time.minute / 10 - Math.floor(minute_selector
+                if (selector_time.minute / 10 > minute_wake_selector.scrollTop / 50) {
+                    minute_wake_selector.scrollBy(0, selector_time.minute / 10 - Math.floor(minute_wake_selector
                         .scrollTop / 50));
-                else
-                    minute_selector.scrollBy(0, selector_time.minute / 10 - Math.ceil(minute_selector
+                    minute_goal_selector.scrollBy(0, selector_time.minute / 10 - Math.floor(minute_goal_selector
                         .scrollTop / 50));
+                } else {
+                    minute_wake_selector.scrollBy(0, selector_time.minute / 10 - Math.ceil(minute_wake_selector
+                        .scrollTop / 50));
+                    minute_goal_selector.scrollBy(0, selector_time.minute / 10 - Math.ceil(minute_goal_selector
+                        .scrollTop / 50));
+                }
+            });
+
+            hour_now_sleep_selector_Inter = setInterval(function() {
+                if(now_calculate_result.hour > hour_now_should_sleep_selector.scrollTop / 50){
+                    hour_now_should_sleep_selector.scrollBy(0, now_calculate_result.hour - Math.floor(hour_now_should_sleep_selector.scrollTop / 50));
+                } else {
+                    hour_now_should_sleep_selector.scrollBy(0, now_calculate_result.hour - Math.ceil(hour_now_should_sleep_selector.scrollTop / 50));
+                }
+            });
+
+            min_now_sleep_selector_Inter = setInterval(function() {
+                if(now_calculate_result.minute / 10 > hour_now_should_sleep_selector.scrollTop / 50){
+                    min_now_should_sleep_selector.scrollBy(0, now_calculate_result.minute - Math.floor(min_now_should_sleep_selector.scrollTop / 50));
+                } else {
+                    min_now_should_sleep_selector.scrollBy(0, now_calculate_result.minute - Math.ceil(min_now_should_sleep_selector.scrollTop / 50));
+                }
             });
         }
 
-        function calculate(th) {
-            if (th.id == "wake_ok_btn") {
-                document.getElementById("wake_text").innerHTML;
-            }
-            change_scene(2);
+
+        var now_calculate_time = new time(1,6,0);
+        var now_calculate_result = new time(1,0,0);
+        function now_update(){
+            var tmp_now_time = new Date();
+            var now_time = new time(tmp_now_time.getHours() > 12 ? 0 : 1, tmp_now_time.getHours() > 12 ? tmp_now_time.getHours() - 12 : tmp_now_time.getHours(), tmp_now_time.getMinutes());
+
+            now_calculate_result = totime(now_calculate_time.tominutes() + now_time.tominutes());
         }
 
-        var hour_sel = document.getElementById("time_hour_selector");
+        var result_calculate_time = new time(1,6,0);
+        var result_calculate_result = new time(1,0,0);
+        function wake_update(){
+            
+        }
     </script>
 </head>
 
-<body onload="seting()">
+<body onload="setting()">
     <div class="scene" id="main">
         <h1 id="main_title">선린 수면 도우미</h1>
         <div class="group-btn">
@@ -332,9 +435,9 @@
                 <img class="icon" src="../img/desk-alarm-clock.png">
                 <p class="icon_text">기상시각</p>
             </div>
-            <div class="btn" id="goal-btn" onclick="change_scene(3)">
+            <div class="btn" id="goal-btn" onclick="change_scene(2)">
                 <img class="icon" src="../img/sleeping-hat.png">
-                <p class="icon_text">목표시각</p>
+                <p class="icon_text">수면시각</p>
             </div>
         </div>
     </div>
@@ -346,11 +449,14 @@
         <h1>현재시각</h1>
         <h2>완벽한 타이밍!</h2>
         <div class="result_text">
-            <div class="long_btn" id="result_back_btn">
+            <div class="long_btn" id="now_result_back_btn">
                 <p>이전</p>
             </div>
+            <div class="long_btn" id="now_result_next_btn">
+                <p>다음</p>
+            </div>
             <div class="time_selector">
-                <div class="time_selector_display" id="time_hour_should_sleep_selector" onmousewheel="return false;">
+                <div class="time_selector_display" id="time_hour_now_should_sleep_selector" onmousewheel="return false;">
                     <span>00</span><br>
                     <span>01</span><br>
                     <span>02</span><br>
@@ -365,7 +471,7 @@
                     <span>11</span><br>
                     <span>12</span><br>
                 </div> :
-                <div class="time_selector_display" id="time_min_should_sleep_selector" onmousewheel="return false;">
+                <div class="time_selector_display" id="time_min_now_should_sleep_selector" onmousewheel="return false;">
                     <span>00</span><br>
                     <span>10</span><br>
                     <span>20</span><br>
@@ -376,7 +482,7 @@
                 </div>에 숙면시
             </div><br>
             <div class="time_selector">
-                <div class="time_selector_display" id="time_hour_can_sleep_selector" onmousewheel="return false;">
+                <div class="time_selector_display" id="time_hour_now_can_sleep_selector" onmousewheel="return false;">
                     <span>00</span><br>
                     <span>01</span><br>
                     <span>02</span><br>
@@ -392,15 +498,16 @@
                     <span>12</span><br>
                 </div>시간&nbsp;
 
-                <div class="time_selector_display" id="time_min_can_sleep_selector" onmousewheel="return false;">
+                <div class="time_selector_display" id="time_min_now_can_sleep_selector" onmousewheel="return false;">
                     <span>00</span><br>
+                    <span>10</span><br>
+                    <span>20</span><br>
                     <span>30</span><br>
+                    <span>40</span><br>
+                    <span>50</span><br>
                     <span>60</span><br>
                 </div>분 숙면가능<br>
             </div><br>
-            <div class="long_btn" id="result_next_btn">
-                <p>다음</p>
-            </div>
         </div>
     </div>
 
@@ -410,12 +517,12 @@
         </div>
         <h1 class="title">기상시각</h1>
         <div class="time_selector">
-            <div class="time_selector_display" id="time_ampm_selector" onmousewheel="selectorWheel(event, this)">
+            <div class="time_selector_display" id="time_ampm_wake_selector" onmousewheel="selectorWheel(event, this)">
                 <span>AM</span><br>
                 <span>PM</span><br>
             </div>
             &nbsp;
-            <div class="time_selector_display" id="time_hour_selector" onmousewheel="selectorWheel(event, this)">
+            <div class="time_selector_display" id="time_hour_wake_selector" onmousewheel="selectorWheel(event, this)">
                 <span>00</span><br>
                 <span>01</span><br>
                 <span>02</span><br>
@@ -431,7 +538,7 @@
                 <span>12</span><br>
             </div>
             :
-            <div class="time_selector_display" id="time_min_selector" onmousewheel="selectorWheel(event, this)">
+            <div class="time_selector_display" id="time_min_wake_selector" onmousewheel="selectorWheel(event, this)">
                 <span>00</span><br>
                 <span>10</span><br>
                 <span>20</span><br>
@@ -446,20 +553,115 @@
         </div>
     </div>
 
-    <div class="scene" id="wake_result">
+    <div class="scene" id="goal">
         <div class="btn" id="back-btn" onclick="back_scene(2)">
             <img class="icon" src="../img/reply.png">
         </div>
-        <h1>기상시각</h1>
-        <h2>완벽한 타이밍!</h2>
-        <p class="result_text" id="wake_text">Roaing...</p>
+        <h1 class="title">목표시각</h1>
+        <div class="time_selector">
+            <div class="time_selector_display" id="time_ampm_goal_selector" onmousewheel="selectorWheel(event, this)">
+                <span>AM</span><br>
+                <span>PM</span><br>
+            </div>
+            &nbsp;
+            <div class="time_selector_display" id="time_hour_goal_selector" onmousewheel="selectorWheel(event, this)">
+                <span>00</span><br>
+                <span>01</span><br>
+                <span>02</span><br>
+                <span>03</span><br>
+                <span>04</span><br>
+                <span>05</span><br>
+                <span>06</span><br>
+                <span>07</span><br>
+                <span>08</span><br>
+                <span>09</span><br>
+                <span>10</span><br>
+                <span>11</span><br>
+                <span>12</span><br>
+            </div>
+            :
+            <div class="time_selector_display" id="time_min_goal_selector" onmousewheel="selectorWheel(event, this)">
+                <span>00</span><br>
+                <span>10</span><br>
+                <span>20</span><br>
+                <span>30</span><br>
+                <span>40</span><br>
+                <span>50</span><br>
+                <span>60</span><br>
+            </div>
+        </div>
+        <div class="long_btn">
+            <p id="wake_ok_btn" onclick="calculate(this)">확인</p>
+        </div>
     </div>
 
-    <div class="scene" id="goal">
+    <div class="scene" id="result">
         <div class="btn" id="back-btn" onclick="back_scene(3)">
             <img class="icon" src="../img/reply.png">
         </div>
-        <h1 class="title">목표시각</h1>
+        <h1>Roading...</h1>
+        <h2>완벽한 타이밍!</h2>
+        <div class="result_text">
+            <div class="long_btn" id="result_back_btn">
+                <p>이전</p>
+            </div>
+            <div class="long_btn" id="result_next_btn">
+                <p>다음</p>
+            </div>
+            <div class="time_selector">
+                <div class="time_selector_display" id="time_hour_result_should_sleep_selector" onmousewheel="return false;">
+                    <span>00</span><br>
+                    <span>01</span><br>
+                    <span>02</span><br>
+                    <span>03</span><br>
+                    <span>04</span><br>
+                    <span>05</span><br>
+                    <span>06</span><br>
+                    <span>07</span><br>
+                    <span>08</span><br>
+                    <span>09</span><br>
+                    <span>10</span><br>
+                    <span>11</span><br>
+                    <span>12</span><br>
+                </div> :
+                <div class="time_selector_display" id="time_min_result_should_sleep_selector" onmousewheel="return false;">
+                    <span>00</span><br>
+                    <span>10</span><br>
+                    <span>20</span><br>
+                    <span>30</span><br>
+                    <span>40</span><br>
+                    <span>50</span><br>
+                    <span>60</span><br>
+                </div>에 숙면시
+            </div><br>
+            <div class="time_selector">
+                <div class="time_selector_display" id="time_hour_result_can_sleep_selector" onmousewheel="return false;">
+                    <span>00</span><br>
+                    <span>01</span><br>
+                    <span>02</span><br>
+                    <span>03</span><br>
+                    <span>04</span><br>
+                    <span>05</span><br>
+                    <span>06</span><br>
+                    <span>07</span><br>
+                    <span>08</span><br>
+                    <span>09</span><br>
+                    <span>10</span><br>
+                    <span>11</span><br>
+                    <span>12</span><br>
+                </div>시간&nbsp;
+
+                <div class="time_selector_display" id="time_min_result_can_sleep_selector" onmousewheel="return false;">
+                    <span>00</span><br>
+                    <span>10</span><br>
+                    <span>20</span><br>
+                    <span>30</span><br>
+                    <span>40</span><br>
+                    <span>50</span><br>
+                    <span>60</span><br>
+                </div>분 숙면가능<br>
+            </div><br>
+        </div>
     </div>
 </body>
 
