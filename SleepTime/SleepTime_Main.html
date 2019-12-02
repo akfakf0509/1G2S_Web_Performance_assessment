@@ -525,15 +525,18 @@
 
         function wake_result_update() {
             document.getElementById("result_h1").innerHTML="기상시각";
+            document.getElementById("wake_or_sleep").innerHTML="숙면";
             result_calculate_result = totime(selector_time.tominutes() - result_calculate_time.tominutes());
         }
 
         function goal_result_update() {
             document.getElementById("result_h1").innerHTML="숙면시각";
+            document.getElementById("wake_or_sleep").innerHTML="기상";
             result_calculate_result = totime(selector_time.tominutes() - result_calculate_time.tominutes());
         }
 
         function now_back_btn_pushed() {
+            if(now_calculate_time.tominutes() - 90 >= 0){
             if (now_calculate_time.minute < 30) {
                 now_calculate_time.hour--;
                 now_calculate_time.minute = 60;
@@ -543,9 +546,11 @@
             now_calculate_time.minute -= 30;
 
             now_update();
+            }
         }
 
         function now_next_btn_pushed() {
+            if(now_calculate_time.tominutes() + 90 <= 24*60){
             now_calculate_time.hour += 1;
             now_calculate_time.minute += 30;
 
@@ -555,11 +560,13 @@
             }
 
             now_update();
+            }
         }
 
         var calculate_mode;
 
         function result_back_btn_pushed() {
+            if(result_calculate_time.tominutes() - 90 >= 0){
             if (result_calculate_time.minute < 30) {
                 result_calculate_time.hour--;
                 result_calculate_time.minute = 60;
@@ -573,9 +580,11 @@
             } else {
                 goal_result_update();
             }
+            }
         }
 
         function result_next_btn_pushed() {
+            if(result_calculate_time.tominutes() + 90 <= 24 * 60){
             result_calculate_time.hour += 1;
             result_calculate_time.minute += 30;
 
@@ -588,6 +597,7 @@
                 wake_result_update();
             } else {
                 goal_result_update();
+            }
             }
         }
     </script>
@@ -625,6 +635,7 @@
             <div class="result_next_btn" id="now_result_next_btn" onclick="now_next_btn_pushed()">
                 <p>다음</p>
             </div>
+            <br>
             <div class="time_selector">
                 <div class="time_selector_display" id="time_ampm_now_should_sleep_selector" onmousewheel="return false;">
                     <span>AM</span><br>
@@ -671,6 +682,18 @@
                     <span>10</span><br>
                     <span>11</span><br>
                     <span>12</span><br>
+                    <span>13</span><br>
+                    <span>14</span><br>
+                    <span>15</span><br>
+                    <span>16</span><br>
+                    <span>17</span><br>
+                    <span>18</span><br>
+                    <span>19</span><br>
+                    <span>20</span><br>
+                    <span>21</span><br>
+                    <span>22</span><br>
+                    <span>23</span><br>
+                    <span>24</span><br>
                 </div>시간&nbsp;
 
                 <div class="time_selector_display" id="time_min_now_can_sleep_selector" onmousewheel="return false;">
@@ -784,7 +807,6 @@
                 <p>다음</p>
             </div>
             <br>
-            
             <div class="time_selector">
                 <div class="time_selector_display" id="time_ampm_result_should_sleep_selector" onmousewheel="return false;">
                     <span>AM</span><br>
@@ -815,7 +837,7 @@
                     <span>40</span><br>
                     <span>50</span><br>
                     <span>60</span><br>
-                </div>에&nbsp;<span>숙면</span>시
+                </div>에&nbsp;<span id="wake_or_sleep">숙면</span>시
             </div><br>
             <div class="time_selector">
                 <div class="time_selector_display" id="time_hour_result_can_sleep_selector"
@@ -833,6 +855,18 @@
                     <span>10</span><br>
                     <span>11</span><br>
                     <span>12</span><br>
+                    <span>13</span><br>
+                    <span>14</span><br>
+                    <span>15</span><br>
+                    <span>16</span><br>
+                    <span>17</span><br>
+                    <span>18</span><br>
+                    <span>19</span><br>
+                    <span>20</span><br>
+                    <span>21</span><br>
+                    <span>22</span><br>
+                    <span>23</span><br>
+                    <span>24</span><br>
                 </div>시간&nbsp;
 
                 <div class="time_selector_display" id="time_min_result_can_sleep_selector" onmousewheel="return false;">
