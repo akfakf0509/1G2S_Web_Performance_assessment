@@ -105,7 +105,15 @@
             transform: scale(0.75);
         }
 
-        #result_back_btn {
+        .result_back_btn {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 30px auto;
+            text-align: center;
+            font-size: 50px;
+
             position: fixed;
             background-color: #6A3EFF;
 
@@ -116,7 +124,15 @@
             transform: scale(0.75);
         }
 
-        #result_next_btn {
+        .result_next_btn {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 30px auto;
+            text-align: center;
+            font-size: 50px;
+
             position: fixed;
             background-color: #6A3EFF;
 
@@ -191,15 +207,23 @@
         function change_scene(sceneNumber) {
             switch (sceneNumber) {
                 case 0:
+                    now_update();
                     document.getElementById("now").classList.add("scene-isShow");
                     break;
                 case 1:
+                    calculate_mode = 1;
                     document.getElementById("wake").classList.add("scene-isShow");
                     break;
                 case 2:
+                    calculate_mode = 2;
                     document.getElementById("goal").classList.add("scene-isShow");
                     break;
                 case 3:
+                    if (calculate_mode == 1) {
+                        wake_result_update();
+                    } else {
+                        goal_result_update();
+                    }
                     document.getElementById("result").classList.add("scene-isShow");
                     break;
             }
@@ -227,23 +251,23 @@
             this.hour = _hour;
             this.minute = _minute;
 
-            this.tominutes = function(){
+            this.tominutes = function () {
                 return (this.isam ? 0 : 12 * 60) + this.hour * 60 + this.minute;
             };
         }
 
-        function totime(minutes){
-            while(minutes > 24 * 60){
+        function totime(minutes) {
+            while (minutes > 24 * 60) {
                 minutes -= 24 * 60;
             }
 
-            if(minutes < 0){
+            if (minutes < 0) {
                 minutes += 24 * 60;
             }
 
-            var tmp = new time(1,0,0);
+            var tmp = new time(1, 0, 0);
 
-            if(minutes >= 12 * 60){
+            if (minutes >= 12 * 60) {
                 minutes -= 12 * 60;
                 tmp.isam = 0;
             }
@@ -251,7 +275,7 @@
             tmp.hour = (minutes - minutes % 60) / 60;
             minutes -= tmp.hour * 60;
             tmp.minute = minutes;
-            
+
             //console.log(tmp.isam + " " + tmp.hour + " "+ tmp.minute);
 
             return tmp;
@@ -323,13 +347,13 @@
 
         var hour_now_should_sleep_selector, min_now_should_sleep_selector;
         var hour_now_can_sleep_selector, min_now_can_sleep_selector;
-        
+
         var hour_now_sleep_selector_Inter, min_now_sleep_selector_Inter;
 
         var hour_result_should_sleep_selector, min_result_should_sleep_selector;
         var hour_result_can_sleep_selector, min_result_can_sleep_selector;
 
-        var hour_result_sleep_selector_Inter, min_result_sleep_selecotr_Inter;
+        var hour_result_sleep_selector_Inter, min_result_sleep_selector_Inter;
 
         function setting() {
             ampm_wake_selector = document.getElementById("time_ampm_wake_selector");
@@ -388,37 +412,162 @@
                 }
             });
 
-            hour_now_sleep_selector_Inter = setInterval(function() {
-                if(now_calculate_result.hour > hour_now_should_sleep_selector.scrollTop / 50){
-                    hour_now_should_sleep_selector.scrollBy(0, now_calculate_result.hour - Math.floor(hour_now_should_sleep_selector.scrollTop / 50));
+            hour_now_sleep_selector_Inter = setInterval(function () {
+                if (now_calculate_result.hour > hour_now_should_sleep_selector.scrollTop / 50) {
+                    hour_now_should_sleep_selector.scrollBy(0, now_calculate_result.hour - Math.floor(
+                        hour_now_should_sleep_selector.scrollTop / 50));
                 } else {
-                    hour_now_should_sleep_selector.scrollBy(0, now_calculate_result.hour - Math.ceil(hour_now_should_sleep_selector.scrollTop / 50));
+                    hour_now_should_sleep_selector.scrollBy(0, now_calculate_result.hour - Math.ceil(
+                        hour_now_should_sleep_selector.scrollTop / 50));
+                }
+
+                if (now_calculate_time.hour > hour_now_can_sleep_selector.scrollTop / 50) {
+                    hour_now_can_sleep_selector.scrollBy(0, now_calculate_time.hour - Math.floor(
+                        hour_now_can_sleep_selector.scrollTop / 50));
+                } else {
+                    hour_now_can_sleep_selector.scrollBy(0, now_calculate_time.hour - Math.ceil(
+                        hour_now_can_sleep_selector.scrollTop / 50));
                 }
             });
 
-            min_now_sleep_selector_Inter = setInterval(function() {
-                if(now_calculate_result.minute / 10 > hour_now_should_sleep_selector.scrollTop / 50){
-                    min_now_should_sleep_selector.scrollBy(0, now_calculate_result.minute - Math.floor(min_now_should_sleep_selector.scrollTop / 50));
+            min_now_sleep_selector_Inter = setInterval(function () {
+                if (Math.floor(now_calculate_result.minute / 10) > min_now_should_sleep_selector.scrollTop /
+                    50) {
+                    min_now_should_sleep_selector.scrollBy(0, now_calculate_result.minute / 10 - Math.floor(
+                        min_now_should_sleep_selector.scrollTop / 50));
                 } else {
-                    min_now_should_sleep_selector.scrollBy(0, now_calculate_result.minute - Math.ceil(min_now_should_sleep_selector.scrollTop / 50));
+                    min_now_should_sleep_selector.scrollBy(0, now_calculate_result.minute / 10 - Math.ceil(
+                        min_now_should_sleep_selector.scrollTop / 50));
+                }
+
+                if (now_calculate_time.minute / 10 > min_now_can_sleep_selector.scrollTop / 50) {
+                    min_now_can_sleep_selector.scrollBy(0, now_calculate_time.minute / 10 - Math.floor(
+                        min_now_can_sleep_selector.scrollTop / 50));
+                } else {
+                    min_now_can_sleep_selector.scrollBy(0, now_calculate_time.minute / 10 - Math.ceil(
+                        min_now_can_sleep_selector.scrollTop / 50));
+                }
+            });
+
+            hour_result_sleep_selector_Inter = setInterval(function () {
+                if (result_calculate_result.hour > hour_result_should_sleep_selector.scrollTop / 50) {
+                    hour_result_should_sleep_selector.scrollBy(0, result_calculate_result.hour - Math.floor(
+                        hour_result_should_sleep_selector.scrollTop / 50));
+                } else {
+                    hour_result_should_sleep_selector.scrollBy(0, result_calculate_result.hour - Math.ceil(
+                        hour_result_should_sleep_selector.scrollTop / 50));
+                }
+
+                if (result_calculate_time.hour > hour_result_can_sleep_selector.scrollTop / 50) {
+                    hour_result_can_sleep_selector.scrollBy(0, result_calculate_time.hour - Math.floor(
+                        hour_result_can_sleep_selector.scrollTop / 50));
+                } else {
+                    hour_result_can_sleep_selector.scrollBy(0, result_calculate_time.hour - Math.ceil(
+                        hour_result_can_sleep_selector.scrollTop / 50));
+                }
+            });
+
+            min_result_sleep_selector_Inter = setInterval(function () {
+                if (Math.floor(result_calculate_result.minute / 10) > min_result_should_sleep_selector
+                    .scrollTop / 50) {
+                    min_result_should_sleep_selector.scrollBy(0, result_calculate_result.minute / 10 - Math
+                        .floor(
+                            min_result_should_sleep_selector.scrollTop / 50));
+                } else {
+                    min_result_should_sleep_selector.scrollBy(0, result_calculate_result.minute / 10 - Math
+                        .ceil(
+                            min_result_should_sleep_selector.scrollTop / 50));
+                }
+
+                if (result_calculate_time.minute / 10 > min_result_can_sleep_selector.scrollTop / 50) {
+                    min_result_can_sleep_selector.scrollBy(0, result_calculate_time.minute / 10 - Math.floor(
+                        min_result_can_sleep_selector.scrollTop / 50));
+                } else {
+                    min_result_can_sleep_selector.scrollBy(0, result_calculate_time.minute / 10 - Math.ceil(
+                        min_result_can_sleep_selector.scrollTop / 50));
                 }
             });
         }
 
 
-        var now_calculate_time = new time(1,6,0);
-        var now_calculate_result = new time(1,0,0);
-        function now_update(){
+        var now_calculate_time = new time(1, 6, 0);
+        var now_calculate_result = new time(1, 0, 0);
+
+        function now_update() {
             var tmp_now_time = new Date();
-            var now_time = new time(tmp_now_time.getHours() > 12 ? 0 : 1, tmp_now_time.getHours() > 12 ? tmp_now_time.getHours() - 12 : tmp_now_time.getHours(), tmp_now_time.getMinutes());
+            var now_time = new time(tmp_now_time.getHours() > 12 ? 0 : 1, tmp_now_time.getHours() > 12 ? tmp_now_time
+                .getHours() - 12 : tmp_now_time.getHours(), tmp_now_time.getMinutes());
 
             now_calculate_result = totime(now_calculate_time.tominutes() + now_time.tominutes());
         }
 
-        var result_calculate_time = new time(1,6,0);
-        var result_calculate_result = new time(1,0,0);
-        function wake_update(){
-            
+        var result_calculate_time = new time(1, 6, 0);
+        var result_calculate_result = new time(1, 0, 0);
+
+        function wake_result_update() {
+            result_calculate_result = totime(selector_time.tominutes - result_calculate_time.tominutes);
+        }
+
+        function goal_result_update() {
+            result_calculate_result = totime(selector_time.tominutes - result_calculate_time.tominutes);
+        }
+
+        function now_back_btn_pushed() {
+            if (now_calculate_time.minute < 30) {
+                now_calculate_time.hour--;
+                now_calculate_time.minute = 60;
+            }
+
+            now_calculate_time.hour -= 1;
+            now_calculate_time.minute -= 30;
+
+            now_update();
+        }
+
+        function now_next_btn_pushed() {
+            now_calculate_time.hour += 1;
+            now_calculate_time.minute += 30;
+
+            if (now_calculate_time.minute > 30) {
+                now_calculate_time.hour++;
+                now_calculate_time.minute = 0;
+            }
+
+            now_update();
+        }
+
+        var calculate_mode;
+
+        function result_back_btn_pushed() {
+            if (result_calculate_time.minute < 30) {
+                result_calculate_time.hour--;
+                result_calculate_time.minute = 60;
+            }
+
+            result_calculate_time.hour -= 1;
+            result_calculate_time.minute -= 30;
+
+            if (calculate_mode == 1) {
+                wake_result_update();
+            } else {
+                goal_result_update();
+            }
+        }
+
+        function result_next_btn_pushed() {
+            result_calculate_time.hour += 1;
+            result_calculate_time.minute += 30;
+
+            if (result_calculate_time.minute > 30) {
+                result_calculate_time.hour++;
+                result_calculate_time.minute = 0;
+            }
+
+            if (calculate_mode == 1) {
+                wake_result_update();
+            } else {
+                goal_result_update();
+            }
         }
     </script>
 </head>
@@ -449,14 +598,15 @@
         <h1>현재시각</h1>
         <h2>완벽한 타이밍!</h2>
         <div class="result_text">
-            <div class="long_btn" id="now_result_back_btn">
+            <div class="result_back_btn" id="now_result_back_btn" onclick="now_back_btn_pushed()">
                 <p>이전</p>
             </div>
-            <div class="long_btn" id="now_result_next_btn">
+            <div class="result_next_btn" id="now_result_next_btn" onclick="now_next_btn_pushed()">
                 <p>다음</p>
             </div>
             <div class="time_selector">
-                <div class="time_selector_display" id="time_hour_now_should_sleep_selector" onmousewheel="return false;">
+                <div class="time_selector_display" id="time_hour_now_should_sleep_selector"
+                    onmousewheel="return false;">
                     <span>00</span><br>
                     <span>01</span><br>
                     <span>02</span><br>
@@ -479,7 +629,7 @@
                     <span>40</span><br>
                     <span>50</span><br>
                     <span>60</span><br>
-                </div>에 숙면시
+                </div>에 기상시
             </div><br>
             <div class="time_selector">
                 <div class="time_selector_display" id="time_hour_now_can_sleep_selector" onmousewheel="return false;">
@@ -549,7 +699,7 @@
             </div>
         </div>
         <div class="long_btn">
-            <p id="wake_ok_btn" onclick="calculate(this)">확인</p>
+            <p id="wake_ok_btn" onclick="change_scene(3)">확인</p>
         </div>
     </div>
 
@@ -557,7 +707,7 @@
         <div class="btn" id="back-btn" onclick="back_scene(2)">
             <img class="icon" src="../img/reply.png">
         </div>
-        <h1 class="title">목표시각</h1>
+        <h1 class="title">수면시각</h1>
         <div class="time_selector">
             <div class="time_selector_display" id="time_ampm_goal_selector" onmousewheel="selectorWheel(event, this)">
                 <span>AM</span><br>
@@ -591,7 +741,7 @@
             </div>
         </div>
         <div class="long_btn">
-            <p id="wake_ok_btn" onclick="calculate(this)">확인</p>
+            <p id="wake_ok_btn" onclick="change_scene(3)">확인</p>
         </div>
     </div>
 
@@ -599,17 +749,22 @@
         <div class="btn" id="back-btn" onclick="back_scene(3)">
             <img class="icon" src="../img/reply.png">
         </div>
-        <h1>Roading...</h1>
+        <h1 id="result_h1">Roading...</h1>
         <h2>완벽한 타이밍!</h2>
         <div class="result_text">
-            <div class="long_btn" id="result_back_btn">
+            <div class="result_back_btn" id="result_back_btn" onclick="result_back_btn_pushed()">
                 <p>이전</p>
             </div>
-            <div class="long_btn" id="result_next_btn">
+            <div class="result_next_btn" id="result_next_btn" onclick="result_next_btn_pushed()">
                 <p>다음</p>
             </div>
             <div class="time_selector">
-                <div class="time_selector_display" id="time_hour_result_should_sleep_selector" onmousewheel="return false;">
+                <div class="time_selector_display" id="time_ampm_result_should_selector" onmousewheel="return false;">
+                    <span>AM</span><br>
+                    <span>PM</span><br>
+                </div>&nbsp;
+                <div class="time_selector_display" id="time_hour_result_should_sleep_selector"
+                    onmousewheel="return false;">
                     <span>00</span><br>
                     <span>01</span><br>
                     <span>02</span><br>
@@ -624,7 +779,8 @@
                     <span>11</span><br>
                     <span>12</span><br>
                 </div> :
-                <div class="time_selector_display" id="time_min_result_should_sleep_selector" onmousewheel="return false;">
+                <div class="time_selector_display" id="time_min_result_should_sleep_selector"
+                    onmousewheel="return false;">
                     <span>00</span><br>
                     <span>10</span><br>
                     <span>20</span><br>
@@ -635,7 +791,8 @@
                 </div>에 숙면시
             </div><br>
             <div class="time_selector">
-                <div class="time_selector_display" id="time_hour_result_can_sleep_selector" onmousewheel="return false;">
+                <div class="time_selector_display" id="time_hour_result_can_sleep_selector"
+                    onmousewheel="return false;">
                     <span>00</span><br>
                     <span>01</span><br>
                     <span>02</span><br>
