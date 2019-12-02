@@ -532,7 +532,7 @@
         function goal_result_update() {
             document.getElementById("result_h1").innerHTML="수면시각";
             document.getElementById("wake_or_sleep").innerHTML="기상";
-            result_calculate_result = totime(selector_time.tominutes() - result_calculate_time.tominutes());
+            result_calculate_result = totime(selector_time.tominutes() + result_calculate_time.tominutes());
         }
 
         function now_back_btn_pushed() {
