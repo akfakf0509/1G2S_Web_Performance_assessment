@@ -4,7 +4,7 @@
 
 ---
 
-##실행법
+## 실행법
 
 - SleepTime 경로이동
 - index.html 실행
